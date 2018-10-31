@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         /*
-         * Make sure bluettoth is enabled
+         * Make sure bluetooth is enabled
          */
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             //Bluetooth is disabled
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 };
 
                 poolingTimer = new Timer("PoolingTimer");//create a new Timer
-                poolingTimer.scheduleAtFixedRate(timerTask, 0, 500);
+                poolingTimer.scheduleAtFixedRate(timerTask, 30, 500);
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 postDeviceChange(device, false);
@@ -422,10 +422,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             BluetoothGattCharacteristic readCharacteristic = mGattServer.getService(UARTProfile.UART_SERVICE)
                     .getCharacteristic(UARTProfile.TX_READ_CHAR);
 
-            int x = (int)(mGravity[0]*1000);
+            /*int x = (int)(mGravity[0]*1000);
             int y = (int)(mGravity[1]*1000);
-            int  z = (int)(mGravity[2]*1000);
-            String data = ""+x+";"+y+";"+z+"@\n";
+            int  z = (int)(mGravity[2]*1000);*/
+
+
+            String data = ""+mGravity[0]+";"+mGravity[1]+";"+mGravity[2]+"@\n";
             byte[] notify_msg = data.getBytes();
             readCharacteristic.setValue(notify_msg);
             Log.d(TAG, "Sending Notifications"+notify_msg);
