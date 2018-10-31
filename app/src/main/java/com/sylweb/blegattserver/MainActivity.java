@@ -6,7 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.ParcelUuid;
-import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -34,6 +33,7 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float mAccel;
     private float mAccelCurrent;
     private float mAccelLast;
-
-    private PowerManager.WakeLock wl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,28 +123,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         startAdvertising();
 
         sensorMan.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-
-        PowerManager pm = (PowerManager) getSystemService(this.POWER_SERVICE);
-        this.wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
-        this.wl.acquire();
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         sensorMan.unregisterListener(this);
-
-        PowerManager pm = (PowerManager) getSystemService(this.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
-        if(this.wl != null) this.wl.release();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             mGravity = event.values.clone();
-            // Shake detection
             float x = mGravity[0];
             float y = mGravity[1];
             float z = mGravity[2];
